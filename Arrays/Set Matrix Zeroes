@@ -1,0 +1,61 @@
+Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
+You must do it in place.
+Input: matrix = [[1,1,1],[1,0,1],[1,1,1]]
+Output: [[1,0,1],[0,0,0],[1,0,1]]
+
+Input: matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
+Output: [[0,0,0,0],[0,4,5,0],[0,3,1,0]]
+
+Approach 1 : we can use another 2d matrix of same size and traverse the original matrix and if we find 0 we make that row and col 0.
+            T.C: O(N*M)*O(N)+O(M) S.C: O(N*M)
+
+Approach 2: using hash map, we can store the indexes of 0's in hash map and after the complete traversal we traverse the hashMap and make that row and col 0's
+            T.C: O(N*M) + O(N*M) = O (2(N*M)) S.C : O(N+M)
+            
+Approach 3: we can change the original matrix to identify the row and col. but how ?
+            what we can do is whenever we find a 0 we make that row's first element 0 and col element as 0 so that we know that we have to work on this col and rows.
+        
+        Corner Case : take two flag for first col and first row to identify whether we need to make the first row 0 or first col as 0 or not.
+                      start from second row and col so that we dont make the whole first row and col 0.
+            
+            Code : 
+                  void makecolzero(int col, vector<vector<int>>& matrix){
+                      for(int i=0 ;i<matrix.size(); i++){
+                          matrix[i][col] = 0;
+                      }
+                  }
+                  void makerowzero(int row, vector<vector<int>>& matrix){
+                      for(int i=0; i<matrix[0].size(); i++){
+                          matrix[row][i] = 0;
+                      }
+                  }
+              void setZeroes(vector<vector<int>>& matrix) {
+                      int n = matrix[0].size();
+                      int m = matrix.size();
+                      int col_flag = 0;
+                      int row_flag = 0;
+                      for(int i=0; i<n; i++)
+                          if(matrix[0][i] == 0) col_flag = 1;
+                      for(int i=0; i<m; i++)
+                          if(matrix[i][0] == 0) row_flag = 1;
+
+                      for(int i=0; i<m; i++){
+                          for(int j=0; j<n; j++){
+                              if(matrix[i][j] == 0){
+                                  matrix[i][0] = 0;
+                                  matrix[0][j] = 0;
+                              }
+                          }
+                      }
+                      for(int col=1; col<n; col++){
+                          if(matrix[0][col] == 0) makecolzero(col,matrix);
+                      }
+                      for(int row=1; row<m; row++){
+                          if(matrix[row][0] == 0) makerowzero(row,matrix);
+                      }
+                      if(col_flag == 1)
+                          makerowzero(0,matrix);
+                      if(row_flag == 1)
+                          makecolzero(0,matrix);
+              }
+            
