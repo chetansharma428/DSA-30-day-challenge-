@@ -1,0 +1,66 @@
+Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals,
+and return an array of the non-overlapping intervals that cover all the intervals in the input.
+Example 1:
+
+Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
+Output: [[1,6],[8,10],[15,18]]
+Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+Example 2:
+
+Input: intervals = [[1,4],[4,5]]
+Output: [[1,5]]
+Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+ 
+
+Constraints:
+
+1 <= intervals.length <= 104
+intervals[i].length == 2
+0 <= starti <= endi <= 104
+
+
+Approach 1 : we sort the array, and check for the second element of first pair > first element of second pair (if(arr[0][1] > arr[1][0])) means overlapping then
+              we update our second element of answer pair and push to our answer array.
+       corner case : if our answer array is empty or our end element of our answer pair is small then means we need new pair its not overlapping
+       T.C: O(2N) S.C: O(N) (answer array)
+       
+       code: 
+       vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        sort(intervals.begin(),intervals.end());
+        vector<vector<int>> ans;
+        int n = intervals.size();
+        for(int i=0; i<n; i++){
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+            if(!ans.empty() && end <= ans.back()[1]) continue;
+            for(int j=i+1; j<n; j++){
+                if(intervals[j][0] <= end)
+                    end = max(end,intervals[j][1]);
+                else 
+                    break;
+            }
+            ans.push_back({start,end});
+        }
+        return ans;
+    }
+
+Approach 2: we can do that in one pass what we ll do is we ll simply check if the first element of the given array pair is greater then our answer's second element
+            means they will not overlap and its a new pair (ex : (1,6) ans (8,10) we can see 6<8 means they will not overlap ) so we ll simply store it,
+            if thats not the case we ll simply take the maximum from both the second element and update our answer's second element
+       Corner case: 
+          if our answer array is empty then we ll simply store the question's array pair because thats our first pair and we ll update accordingly
+         
+         code:
+           //optmised O(N) O(N)
+                sort(intervals.begin(),intervals.end());
+                  vector<vector<int>> ans;
+                  int n = intervals.size();
+                  for(int i=0; i<n; i++){
+                      if(ans.empty() || intervals[i][0] > ans.back()[1])
+                          ans.push_back(intervals[i]); // means this pair was not overlapping with the previous intervals
+                      else 
+                          ans.back()[1] = max(ans.back()[1],intervals[i][1]); // means they are overlapping and we need to update 
+                                                                              // our ans second element
+                  }
+                  return ans;
+    }
