@@ -1,0 +1,39 @@
+Given an array nums of size n, return the majority element.
+The majority element is the element that appears more than ⌊n / 2⌋ times. You may assume that the majority element always exists in the array.
+
+Example 1:
+Input: nums = [3,2,3]
+Output: 3
+
+Example 2:
+Input: nums = [2,2,1,1,1,2,2]
+Output: 2
+
+Constraints:
+n == nums.length
+1 <= n <= 5 * 104
+-109 <= nums[i] <= 109
+
+Approach 1: we can use two loops, fix one element and check whether that element is n/2 times if yes return else move to another element.
+            T.C: O(N*2) S.C: O(1)
+
+Approach 2 : we can use moore's Voting algo. , we traverse the array and maintain the count and max_element, if(count == 0) means we have to pick and element else 
+              we ll vote the element by incrementing the count or decrement the count if the current element is not the max_element.
+              
+              T.C: O(N) S.C: O(1)
+              
+              Code: 
+              int majorityElement(vector<int>& nums) {
+                //moore's Voting algo.
+                int cnt = 0;
+                int max_ele = 0;
+                for(int i:nums){
+                    if(cnt == 0)
+                        max_ele = i;
+                    if(max_ele == i) // here we are voting if that element has appeared more than once
+                        cnt++;
+                    else  // we are decrementing the vote
+                        cnt--;
+                }
+                return ele;
+    }
