@@ -1,0 +1,84 @@
+Largest subarray with 0 sum:
+
+Given an array having both positive and negative integers. The task is to compute the length of the largest subarray with sum 0.
+
+Example 1:
+
+Input:
+N = 8
+A[] = {15,-2,2,-8,1,7,10,23}
+Output: 5
+Explanation: The largest subarray with
+sum 0 will be -2 2 -8 1 7.
+
+Constraints:
+1 <= N <= 105
+-1000 <= A[i] <= 1000, for each valid i
+
+Approach 1 : we can think brute force and fix one element and for that element we ll find the longest subarray and maintain a longest_sub variable and update if we 
+            find the longer than previous, for that we need two nested loops.
+            Time Complexity: O(N^2) 
+            Space Complexity: O(1)
+          Code: 
+          int maxLen(vector<int>&A, int n)
+           {   
+                //brute force O(n^2) O(1)
+                
+                int longest_cnt = 0;
+                for(int i=0; i<n-1; i++){
+                    int sum = A[i];
+                    for(int j=i+1; j<n; j++){
+                        sum+=A[j];
+                        if(sum == 0)
+                            longest_cnt = max(longest_cnt,j-i+1);
+                    }
+                }
+                return longest_cnt;
+            }
+
+Approach 2: we can use prefix sum array to find out which sub-array of the array has sum = 0 and to whether that sum has been previously occured we ll use hashmap
+            for searching part and reduce the time in exchange of space.
+            Time Complexity: O(N)
+            Space Complexity: O(N)+O(N) = O(2N)
+          Code:
+            vector<int> prefix;
+                unordered_map<int,int> mp;
+                int prev = 0;
+                for(auto it: A){
+                    prev+=it;
+                    prefix.push_back(prev);
+                }
+                int longest_sub = 0;
+                mp[0] = -1;
+                for(int i=0; i<n; i++){
+                    if(mp.find(prefix[i]) != mp.end()){
+                        longest_sub = max(longest_sub, i-mp[prefix[i]]);
+                    }
+                    else
+                        mp[prefix[i]] = i;
+                }
+                return longest_sub;
+
+Approach 3: instead of using an prefix array we can only maintain a variable and do the same thing in one iteration,
+            what we ll do is store the sum's value with current index if its not been previously stored and if its already present we get the max of previous val and 
+            current_index-map[sum](index previously stored) and return the answer after iteration.
+          Time Complexity: O(N)
+          Space Complexity: O(N)
+          Code:
+            // little space optimised O(N) O(N)
+        
+                  int sum = 0;
+                  unordered_map<int,int> mp;
+                  int longest_sub = 0;
+                  mp[0] = -1;
+                  for(int i=0; i<n; i++){
+                      sum+=A[i];
+                      if(mp.find(sum) != mp.end()){
+                          longest_sub = max(longest_sub, i-mp[sum]);
+                      }
+                      else
+                          mp[sum] = i;
+                  }
+                  return longest_sub;
+
+
