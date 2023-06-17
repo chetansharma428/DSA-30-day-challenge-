@@ -1,0 +1,126 @@
+Given an array nums of n integers, return an array of all the unique quadruplets [nums[a], nums[b], nums[c], nums[d]] such that:
+0 <= a, b, c, d < n
+a, b, c, and d are distinct.
+nums[a] + nums[b] + nums[c] + nums[d] == target
+You may return the answer in any order.
+
+Example 1:
+Input: nums = [1,0,-1,0,-2,2], target = 0
+Output: [[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+
+Example 2:
+Input: nums = [2,2,2,2,2], target = 8
+Output: [[2,2,2,2]]
+
+Constraints:
+1 <= nums.length <= 200
+-109 <= nums[i] <= 109
+-109 <= target <= 109
+
+Approach 1: we can think of the brute force and use four loops and with each outer loop fix one element and find i+j+k+l == target and for unique part we ll use set ds
+            and store our array in that.
+            Time Complexity: O(N^4)
+            Space Complexity: O(N)->(ans array) + (2*no. of unique quads) ->(set ds)
+            
+            Code: 
+            vector<vector<int>> fourSum(vector<int>& nums, int target) {
+                int n = nums.size();
+                set<vector<int>> st;
+                vector<vector<int>> ans;
+                for(int i=0; i<n; i++){
+                    for(int j=i+1; j<n; j++){
+                        for(int k=j+1; k<n; k++){
+                            for(int l=k+1; l<n; l++){
+                                long long sum = nums[i]+nums[j];
+                                sum+=nums[k];
+                                sum+=nums[l];
+                                if(sum == target ){
+                                    vector<int> temp = {nums[i],nums[j],nums[k],nums[l]};
+                                    sort(temp.begin(),temp.end());
+                                    st.insert(temp);
+                                }
+                            }
+                        }
+                    }
+                }
+                for(auto it:st)
+                    ans.push_back(it);
+                return ans;
+            }
+            
+ Approach 2: we can eliminate the last loop as we know nums[l] = target - (nums[i]+nums[j]+nums[k]) so by this logic we can think of something. what ll do is 
+              we have to find the nums[l] in the array but the trick part is we need to find only between j to k because if we find in whole array we may taking the 
+              duplicate element which is already fixed as i/j/k and as we know we can search at O(1) only in hashmap/hashset so we ll use hashset to eliminate the last
+              loop.
+              Time Complexity: O(N^3*log(M))
+              Space Complexity: O(N)(ans array) + O(2*no. of unique quads) + O(N)(hashset ds At most, the set can contain approximately all the array elements 
+                                                                                  and so the space complexity is O(N))
+              Code:
+                vector<vector<int>> fourSum(vector<int>& nums, int target) {
+                  int n = nums.size();
+                  set<vector<int>> st;
+
+                  for(int i=0; i<n; i++){
+                      for(int j=i+1; j<n; j++){
+                          //taking everything in long long because num[i] can be 10^9
+                          //it doesnt go out of limit 
+                          unordered_set<long long> temp;
+                          for(int k=j+1; k<n; k++){
+                              // adding in mutiple lines so that it doesnt exceeds the integer limit
+                              long long sum = nums[i]+nums[j];
+                              sum+=nums[k];
+                              long long forth = target - sum;
+                              if(temp.find(forth) != temp.end()){
+                                  vector<int> num = {nums[i], nums[j], nums[k], (int)forth};
+                                  sort(num.begin(), num.end());
+                                  st.insert(num);
+                              }
+                              // inserting kth element so that we can check in future
+                              temp.insert(nums[k]);
+                          }
+                      }
+                  }
+                  vector<vector<int>> ans(st.begin(), st.end());
+                  return ans;
+              }
+                
+ Approach 3: Most optimised, we can think of two pointer to avoid using hashset for finding the nums[l] and to avoid taking duplicates we have to sort the array
+             here sorting will work because the constraints are i!=j!=k!=l it doesnt say that i<j<k<l so we doesnt have to worry about the position so we can use sorting
+             now, first we sort and fix i and j and take two pointers k and l in both ends and check i+j+k+l == target then store else i+j+k+l < target k++ else l-- 
+             trick part : as we dont want duplicate than we ll not take the same element again for that we ll check if(j!=i+1(means its nt the first element) && nums[j] == nums[i]) continue
+             
+             Time Complexity: O(N^3)
+             Space Complexity: O(N)(ans array) else O(1)
+             
+             Code:
+             vector<vector<int>> fourSum(vector<int>& nums, int target) {
+             //Most Optimised O(N^3) O(1)
+                  int n = nums.size();
+                  sort(nums.begin(),nums.end());
+                  vector<vector<int>> ans;
+                  for(int i=0; i<n; i++){
+                      if(i>0 && nums[i] == nums[i-1] ) continue;
+                      for(int j=i+1; j<n; j++){
+                          if(j!=i+1 && nums[j] == nums[j-1] ) continue;
+                          int k = j+1;
+                          int l = n-1;
+                          while(k<l){
+                              long long sum = nums[i]+nums[j];
+                              sum+=nums[k];
+                              sum+=nums[l];
+                              if(sum == target){
+                                  ans.push_back({nums[i],nums[j],nums[k],nums[l]});
+                                  k++;
+                                  l--;
+                                  while(k<l && nums[k]==nums[k-1]) k++;
+                                  while(k<l && nums[l]==nums[l+1]) l--;
+                              }else if(sum < target) k++;
+                               else l--;
+                          }
+                      }
+                  }
+                  return ans;
+              }
+ 
+ 
+ 
