@@ -1,0 +1,54 @@
+Given the head of a singly linked list, reverse the list, and return the reversed list.
+
+Example 1:
+Input: head = [1,2,3,4,5]
+Output: [5,4,3,2,1]
+
+Example 2:
+Input: head = [1,2]
+Output: [2,1]
+
+Example 3:
+Input: head = []
+Output: []
+ 
+Constraints:
+The number of nodes in the list is the range [0, 5000].
+-5000 <= Node.val <= 5000
+
+Approach 1(iteratively): we need 3 pointer one which points to head one which points to previous and one which points the next of the head. 
+                          after every iteration we change the pointers pointing to next to previous the move forward to next.
+                        Time Complexity: O(N)
+                        Space Complexity: O(1)
+                          Code: 
+                                ListNode* reverseList(ListNode* head) {
+                                 if(head == NULL) return head;
+                                  ListNode *temp = head;
+                                  ListNode *prev = NULL;
+                                  ListNode *nxt = head->next;
+                                  while(nxt!=NULL){
+                                      temp->next = prev;
+                                      prev = temp;
+                                      temp = nxt;
+                                      nxt = nxt->next;
+                                  }
+                                  temp->next = prev;
+                                  return temp;
+                                }          
+Approach 2(Recursively): we can use recurtion for the same process.
+                      Time Complexity: O(N)
+                      Space Complexity: O(N)
+                      Code:
+                      ListNode* solve(ListNode* head){
+                          if(head == NULL || head->next == NULL) return head;
+                          ListNode* newnode = solve(head->next);
+                          ListNode* headnext = head->next;
+                          headnext->next = head;
+                          head->next = NULL;
+                          return newnode;
+                      }
+                      ListNode* reverseList(ListNode* head) {
+                         if(head == NULL) return head;
+                          ListNode *temp = head;
+                          return solve(temp);
+                      }
