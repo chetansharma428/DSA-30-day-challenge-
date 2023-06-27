@@ -1,0 +1,83 @@
+Given a string s, find the length of the longest substring without repeating characters.
+
+Example 1:
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3.
+
+Example 2:
+Input: s = "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+
+Example 3:
+Input: s = "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3.
+Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+ 
+Constraints:
+0 <= s.length <= 5 * 104
+s consists of English letters, digits, symbols and spaces.
+
+Approach 1: we can use two loops to fix one character and check for the others if any character repeats we break the loop and update our answer, but to check whether 
+            the current element was present in our previous substring either we search one use one extra loop and increase our time complexity to O(N^3) or we can 
+            use hashmap and store our substring elements and check, we can search single characters in hashmap in O(1) time so we choose hashmap.
+
+            Time Complexity : O(N^2)
+            Space Complexity: O(N)
+            Code:   
+                brute force O(N^2) O(N)
+                    int n = s.length();
+                    if(n<1) return 0; //corner case
+                    int ans = INT_MIN;
+            
+                    for(int i=0; i<n; i++){
+                        int cur = 0;
+                        int j=i;
+                        unordered_set<char> st;
+                       while(j<n){
+                           if(st.find(s[j])!=st.end()) break;
+                           else{
+                               st.insert(s[j++]);
+                               cur++;
+                           }
+                       }
+                       ans = max(cur,ans);
+                    }
+                    return ans;
+                }
+Approach 2: we can use the sliding window approach to reduce the extra loop which we were using, we have to use a hashmap also for unique elements.
+            here, we'll use the variable size of the window (means which is dynamic and ll change accordingly)
+            1. we'll use two pointers one which we'll point to the front and another to the end. 
+            2. push into the map from the end pointer.
+            3. check if(map.size() == windowSize) update ans else if(map.size()<windowSize()) means duplicate exist remove duplicate from the front pointer.
+            Time Complexity: O(N)
+            Space Complexity: O(K)
+              code: 
+                int n = s.length();
+                if(n == 0) return 0;
+            
+                int ans = INT_MIN;
+                unordered_map<char,int> mp;
+                int strt = 0;
+                int end = 0;
+                 while(end<n){
+                        mp[s[end]]++;
+                        int windowSize = end-strt+1;
+                        if(mp.size() == windowSize){ // means all unique elements
+                            ans = max(windowSize,ans);
+                        }
+                        else if(mp.size()<windowSize){ // means duplicate exists
+                            while(mp.size() != end-strt+1){ // removing duplicate
+                                mp[s[strt]]--;
+                                if(mp[s[strt]] == 0)
+                                    mp.erase(s[strt]);
+                                strt++; // move to next ele.
+                            }
+                        }
+                        end++;
+                    }
+                  return ans;
+                }
+            
