@@ -1,0 +1,54 @@
+There is a singly-linked list head and we want to delete a node node in it. You are given the node to be deleted node. You will not be given access to the first node of head.
+All the values of the linked list are unique, and it is guaranteed that the given node node is not the last node in the linked list.
+Delete the given node. Note that by deleting the node, we do not mean removing it from memory. We mean:
+
+The value of the given node should not exist in the linked list.
+The number of nodes in the linked list should decrease by one.
+All the values before node should be in the same order.
+All the values after node should be in the same order.
+
+Custom testing:
+For the input, you should provide the entire linked list head and the node to be given node. node should not be the last node of the list and should be an actual node in the list.
+We will build the linked list and pass the node to your function.
+The output will be the entire list after calling your function.
+ 
+Example 1:
+Input: head = [4,5,1,9], node = 5
+Output: [4,1,9]
+Explanation: You are given the second node with value 5, the linked list should become 4 -> 1 -> 9 after calling your function.
+
+Example 2:
+Input: head = [4,5,1,9], node = 1
+Output: [4,5,9]
+Explanation: You are given the third node with value 1, the linked list should become 4 -> 5 -> 9 after calling your function.
+ 
+Constraints:
+The number of the nodes in the given list is in the range [2, 1000].
+-1000 <= Node.val <= 1000
+The value of each node in the list is unique.
+The node to be deleted is in the list and is not a tail node.
+
+Approach 1: as the only node is given so the idea is to copy the value of the node from the forward nodes till we reach end node as we reach end node we simply cut that
+            node, for this process we need 2 pointers 1 pointing to current node and 1 pointing to forward node, we keep on traversing till our forward pointer reaches
+            end node till that we ll copy the value of the forward node to current node and after reaching end simply make current ->next = NULL.
+            Time Complexity:O(N)
+            Space Complexity: O(1)
+            Code:  
+              ListNode* cur = node;
+              ListNode* frd = node->next;
+              while(cur->next != NULL && frd!=NULL){
+                  cur->val = frd->val;
+                  if(frd->next == NULL) cur->next = NULL;
+                  else{
+                       cur = cur->next;
+                      frd = cur->next;
+                  }
+              }
+Approach 2: we can play little smart here as we can observe that we don't have to traverse the entire LL we can do that with next node also like in above approach we 
+            were taking whole traversal to cut out that one node why not we do it in next node, we can we copy the value of next node to given node and cut out the 
+            next node itself by pointing the current node to next->next node means our next node is cutted out and our chain of LL is still maintained.
+            Time Complexity: O(1)
+            Space Complexity: O(1)
+              Code:
+                node->val = node->next->val; // coping the value
+                node->next = node->next->next; // cutting out the node and pointing the current to next->next
