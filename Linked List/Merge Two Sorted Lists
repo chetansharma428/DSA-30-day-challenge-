@@ -1,0 +1,77 @@
+You are given the heads of two sorted linked lists list1 and list2. Merge the two lists in a one sorted list. The list should be made by splicing together the nodes of the first two lists.
+Return the head of the merged linked list.
+
+Example 1:
+Input: list1 = [1,2,4], list2 = [1,3,4]
+Output: [1,1,2,3,4,4]
+
+Example 2:
+Input: list1 = [], list2 = []
+Output: []
+
+Example 3:
+Input: list1 = [], list2 = [0]
+Output: [0]
+ 
+Constraints:
+The number of nodes in both lists is in the range [0, 50].
+-100 <= Node.val <= 100
+Both list1 and list2 are sorted in non-decreasing order.
+
+Approach 1: we use two pointers pointing to both the list and whichever no. is smaller we make a dummy node and assign the smaller value to that node and point dummy next
+            to the created node.
+            Time Complexity: O(N+M)
+            Space Complexity: O(N+M)
+Approach 2: instead of creating nodes for each value we can manipulate the pointers and manage to do it in O(1) space. same above approach but instead of creating new
+            node for every value we try to point the pointers.
+            Time Complexity: O(N+M)
+            Space Complexity: O(1)
+            Code: 
+                  ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+                          if(list1 == NULL ) return list2;
+                          if(list2 == NULL) return list1;
+                  
+                      // iterative way 
+                  
+                          ListNode* itr1 = list1;
+                          ListNode* itr2 = list2;
+                          ListNode* dummy = new ListNode(0);
+                          ListNode* head = dummy;
+                          while(itr1 != NULL && itr2 != NULL){
+                              if(itr1->val<=itr2->val){
+                                  dummy->next = itr1;
+                                  itr1 = itr1->next;
+                                  dummy = dummy->next;
+                              }
+                              else{
+                                  dummy->next = itr2;
+                                  itr2 = itr2->next;
+                                  dummy = dummy->next;
+                              }
+                          }
+                          while(itr1!=NULL){
+                              dummy->next = itr1;
+                              itr1 = itr1->next;
+                              dummy = dummy->next;
+                          }
+                          while(itr2!=NULL){
+                              dummy->next = itr2;
+                              itr2 = itr2->next;
+                              dummy = dummy->next;
+                          }
+                          dummy->next = NULL;
+                          return head->next;
+                    }  
+Approach 3: recursive way.
+            Time Complexity: O(N+M)
+            Space Complexity: O(N+M) stack space
+            code:
+              ListNode* ptr1 = list1;
+              ListNode* ptr2 = list2;
+              if(ptr1->val<ptr2->val){
+                  ptr1->next = mergeTwoLists(ptr1->next,ptr2);
+                  return ptr1;
+              }else{
+                  ptr2->next = mergeTwoLists(ptr1,ptr2->next);
+                  return ptr2;
+              }
