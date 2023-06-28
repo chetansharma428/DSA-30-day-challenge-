@@ -1,0 +1,78 @@
+Given the head of a linked list, remove the nth node from the end of the list and return its head.
+
+Example 1:
+Input: head = [1,2,3,4,5], n = 2
+Output: [1,2,3,5]
+
+Example 2:
+Input: head = [1], n = 1
+Output: []
+
+Example 3:
+Input: head = [1,2], n = 1
+Output: [1]
+ 
+Constraints:
+The number of nodes in the list is sz.
+1 <= sz <= 30
+0 <= Node.val <= 100
+1 <= n <= sz
+
+Approach 1: we find the lenght of the LL and subtract the given n with len to get the nth node which needs to be remove. we iterate to that node and remove it.
+            Time Complexity: O(N)
+            Space Complexity: O(1)
+            code:
+              int findlength(ListNode* head){
+                  if(head == NULL) return 0;
+                  int len = 0;
+                  while(head!=NULL){
+                      len++;
+                      head = head->next;
+                  }
+                  return len;
+              }
+              ListNode* removeNthFromEnd(ListNode* head, int n) {
+                  if(head == NULL) return head;
+                  if(head->next == NULL && n==1) return head->next;
+                  
+                  ListNode* temp = head;
+                  int len = findlength(temp);
+                  temp = head;
+                  len-=n;
+                  ListNode *prev = head;
+                  if(len == 0){
+                      temp = temp->next;
+                      prev->next = NULL;
+                      prev = temp;
+                      head = temp;
+                      return head;
+                  }
+                  for(int i=0; i<len; i++){
+                      prev = temp;
+                      temp = temp->next;
+                  }
+                  prev->next = temp->next;
+                  temp->next = NULL;
+                  return head;
+              }
+Approach 2: we can do it in one pass also using fast and slow pointer what we have to do is, first make the fast pointer go n steps,
+            now, the fast pointer is at nth position from front and slow is at starting point now we start them together till fast->next == NULL this will make our
+            slow pointer to stand at nth-1 position from the back and we remove the node.
+      corner case: if n == lenght of the LL then the above approach will fail for that we ll check right after making our fast pointer go n step we check 
+                    if(fast == NULL) return head->next; (means we traverse the entire LL and n was == length )
+          Time Complexity: O(N)
+          Space Complexity: O(1)
+          Code:
+            // one pass solution
+              ListNode* fast = head;
+              ListNode* slow = head;
+              for(int i=0; i<n; i++) fast = fast->next;
+              if(fast == NULL) // means n == length of the LL so we need to remove first node
+                  return head->next;
+              while(fast->next){
+                  fast = fast->next;
+                  slow = slow->next;
+              }
+              slow->next = slow->next->next;
+              return head;
+          }
