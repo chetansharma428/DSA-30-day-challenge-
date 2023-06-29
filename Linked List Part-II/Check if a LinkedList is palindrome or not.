@@ -1,0 +1,97 @@
+Given the head of a singly linked list, return true if it is a palindrome or false otherwise.
+
+Example 1:
+Input: head = [1,2,2,1]
+Output: true
+
+Example 2:
+Input: head = [1,2]
+Output: false
+ 
+Constraints:
+The number of nodes in the list is in the range [1, 105].
+0 <= Node.val <= 9
+
+Approach 1 : we just put all the elements in an array and use two pointers and check if(arr[start]!=arr[end]) return false 
+            Time Complexity: O(N)+O(N) = O(2N) or O(N)
+            Space Complexity: O(N)
+Approach 2: we can use slow and fast pointer to find the mid and after that store the half or the LL in an array and reverse the array and compare them.
+            Time Complexity: O(N)+O(N/2) = O(N)
+            Space Complexity: O(N/2) = O(N)
+Approach 3: we find the mid using slow and fast and reverse the half end and then compare them and again reverse them so that our given LL input is not changed.
+            Time Complexity: O(N)
+            Space Complexity: O(1)
+            code:
+              ListNode* reverse(ListNode* head){
+                if(head == NULL || head->next == NULL) return head;
+                ListNode* cur = head;
+                ListNode* prev = NULL;
+                ListNode* nxt = head->next;
+                while(nxt != NULL){
+                    cur->next = prev;
+                    prev = cur;
+                    cur = nxt;
+                    nxt = nxt->next;
+                }
+                cur->next = prev;
+                return cur;
+            }
+            bool isPalindrome(ListNode* head) {
+                //using slow and fast pointer
+                if(head->next == NULL) return true;
+                ListNode* slow = head;
+                ListNode* fast = head;
+                while(fast!=NULL && fast->next != NULL){
+                    fast = fast->next->next;
+                    slow = slow->next;
+                }
+                slow = reverse(slow);
+                fast = head;
+                while(slow){
+                    if(fast->val!=slow->val) return false;
+                    fast = fast->next;
+                    slow = slow->next;
+                }
+                return true;
+          }
+Approach 4: we find the mid by iterating n/2 elements and then do the same process as above.
+            Time Complexity: O(N)
+            Space Complexity: O(1)
+            Code:
+            ListNode* reverse(ListNode* head){
+                if(head == NULL || head->next == NULL) return head;
+                ListNode* cur = head;
+                ListNode* prev = NULL;
+                ListNode* nxt = head->next;
+                while(nxt != NULL){
+                    cur->next = prev;
+                    prev = cur;
+                    cur = nxt;
+                    nxt = nxt->next;
+                }
+                cur->next = prev;
+                return cur;
+            }
+            bool isPalindrome(ListNode* head) {
+                if(head->next == NULL) return true;
+                int n = 0;
+                ListNode * temp = head;
+                while(temp!=NULL){
+                    n++;
+                    temp = temp ->next;
+                }
+                temp = head;
+                for(int i=0; i<n/2; i++){
+                    temp = temp->next;
+                }
+                ListNode* half = temp;
+                ListNode* itr = head; 
+                temp = reverse(temp);
+                for(int i=0; i<(n/2),itr!=NULL,temp!=NULL; i++){
+                    if(itr->val!=temp->val) return false;
+                    itr = itr->next;
+                    temp = temp->next;
+                }
+                temp = reverse(half);
+                return true;
+            }
