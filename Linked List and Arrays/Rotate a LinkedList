@@ -1,0 +1,40 @@
+Given the head of a linked list, rotate the list to the right by k places.
+
+Example 1:
+Input: head = [1,2,3,4,5], k = 2
+Output: [4,5,1,2,3]
+
+Example 2:
+Input: head = [0,1,2], k = 4
+Output: [2,0,1]
+ 
+Constraints:
+The number of nodes in the list is in the range [0, 500].
+-100 <= Node.val <= 100
+0 <= k <= 2 * 109
+
+Approach 1: As we know we can only reach the end of the LL by traversing so why not we make our LL circular and break the connection on the point from where we need 
+            our linked to be rotated, that makes sense but how we reach that point, the answer is by using mod '%' operator.
+
+            Time Complexity: O(N)
+            Space Complexity: O(1)
+            Code:
+              ListNode* rotateRight(ListNode* head, int k) {
+                if(head == NULL || head->next== NULL || k <=0 ) return head;
+                int n = 1;
+                ListNode* temp = head;
+                // cal len 
+                while(temp->next!=NULL && ++n)
+                    temp= temp->next;
+                k=k%n;
+                // make circular linked list
+                temp->next = head;
+                k=n-k;
+                // goto the k element to break the link
+                while(k--){
+                    temp = temp->next;
+                }
+                head = temp->next;
+                temp ->next = NULL;
+                return head;
+            }
