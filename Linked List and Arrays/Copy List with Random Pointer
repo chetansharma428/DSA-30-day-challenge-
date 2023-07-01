@@ -1,0 +1,96 @@
+PROBLEM STATEMENT
+Q. A linked list of length n is given such that each node contains an additional random pointer, which could point to any node in the list or null.
+Construct a deep copy of the list. The deep copy should consist of exactly n brand new nodes, where each new node has its value set to the value of its corresponding original node. Both the next and random pointer of the new nodes should point to new nodes in the copied list such that the pointers in the original list and copied list represent the same list state. None of the pointers in the new list should point to nodes in the original list.
+For example, if there are two nodes X and Y in the original list, where X.random --> Y, then for the corresponding two nodes x and y in the copied list, x.random --> y.
+Return the head of the copied linked list.
+The linked list is represented in the input/output as a list of n nodes. Each node is represented as a pair of [val, random_index] where:
+val: an integer representing Node.val
+random_index: the index of the node (range from 0 to n-1) that the random pointer points to, or null if it does not point to any node.
+
+Your code will only be given the head of the original linked list.
+
+Example 1:
+Input: head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+Output: [[7,null],[13,0],[11,4],[10,2],[1,0]]
+
+Example 2:
+Input: head = [[1,1],[2,1]]
+Output: [[1,1],[2,1]]
+
+Example 3:
+Input: head = [[3,null],[3,0],[3,null]]
+Output: [[3,null],[3,0],[3,null]]
+
+Constraints:
+0 <= n <= 1000
+-104 <= Node.val <= 104
+Node.random is null or is pointing to some node in the linked list.
+
+Approach 1: i. We can use hashmap and store the original node and newly created deep copy node together.
+            ii. we again traverse through the given list. For each node, link the deep node present as the hash value of the original node as per the original node. (we 
+                do these all with the help of hashmap because we use original LL pointers and just link them to the new deep copy nodes to make exact new LL)
+            iii. now, we return the hashmap[head] because we know the new deep copy LL head will be the same. 
+            Time Complexity: O(N)+O(N)
+            Space Complexity: O(N) -> for hashmap
+            code:
+              Node* copyRandomList(Node* head) {
+                //hashmap approach O(N)+O(N) O(N)
+                unordered_map<Node*, Node*> mp;
+                Node* temp = head;
+                while(temp!=NULL){
+                    Node* node = new Node(temp->val); //creating new node and storing them with original nodes
+                    mp[temp] = node;
+                    temp = temp->next;
+                }
+                temp = head;
+                while(temp!=NULL){
+                    Node* node = mp[temp]; // taking new nodes from hashmap 
+                    node->next = (temp->next!=NULL)?mp[temp->next]:NULL; // using hashmap to locate the new next nodes and connect them
+                    node->random = (temp->random!=NULL)?mp[temp->random]:NULL;  // same for the random pointers 
+                    temp = temp->next;
+                }
+                return mp[head];
+                //This approach works because we already kept the new nodes with the original nodes and we locate them with 
+                //The help of the original LL and hashmap make the search easily
+      }
+Approach 2: The optimization will be in removing the extra spaces, i.e., the hashmap used in brute force. This approach can be broken down into three steps. 
+            i. Create deep nodes of all nodes. Instead of storing these nodes in a hashmap, we will point it to the next of the original nodes. or we can say 
+                we store the new nodes in between the original nodes.
+            ii. Take a pointer, say itr, point it to the head of the list. This will help us to point random pointers as per the original list. 
+                This can be achieved by itr->next->random = itr->random->next
+            iii. Use three-pointers. One dummy node whose next node points to the first deep node. itr pointer at the head of the original list and fast
+                  which is two steps ahead of the itr. This will be used to separate the original linked list with the deep nodes list.
+            Time Complexity: O(N)
+            Space Complexity: O(1)
+              code:
+              //OPTIMISED VERSION without hashmap O(N)+O(N) O(1)
+                 Node* copyRandomList(Node* head) {
+                    Node* temp = head;
+                    while(temp!=NULL){ // creating newnodes and attaching them in the middle of every original nodes
+                                            // eg: orinode->newnode->orinode
+                        Node* newnode = new Node(temp->val);
+                        newnode->next = temp->next;
+                        temp->next = newnode;
+                        temp = temp->next->next;
+                    }
+                    //attaching random pointers to the newnodes(deep copy nodes)
+                    temp = head;
+                    while(temp!=NULL){
+                        if(temp->random!=NULL)
+                            temp->next->random = temp->random->next;
+                        temp = temp->next->next;
+                    }
+                    Node* dummy = new Node(0);
+                    temp = dummy;
+                    Node* itr = head;
+                    Node* fast = head;
+                    // final step: making two separate LL from the mixed LL and restoring the original LL as it was.
+                    while(fast!=NULL){
+                        fast = itr->next->next;
+                        temp->next = itr->next;
+                        itr->next = fast;
+                        temp = temp->next;
+                        itr = fast;
+                    }
+                    return dummy->next;
+                }
