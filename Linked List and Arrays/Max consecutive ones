@@ -1,0 +1,33 @@
+Given a binary array nums, return the maximum number of consecutive 1's in the array.
+
+Example 1:
+Input: nums = [1,1,0,1,1,1]
+Output: 3
+Explanation: The first two digits or the last three digits are consecutive 1s. The maximum number of consecutive 1s is 3.
+
+Example 2:
+Input: nums = [1,0,1,1,0,1]
+Output: 2
+ 
+Constraints:
+1 <= nums.length <= 105
+nums[i] is either 0 or 1.
+
+Approach : This question is simple implementation brute force problem, we can do this in single loop and in one pass. As we know there are only two types of no. present
+            in the given array 0 & 1 so we iterate over the array if it is 0 we reset our count to 0 because we want to count only consecutive 1s, else it is 1 we 
+            increment the count and update our answer = max(count,answer).
+            Time Complexity: O(N)
+            Space Complexity: O(1)
+            Code:  
+            int findMaxConsecutiveOnes(vector<int>& nums) {
+              int ans = 0;
+              int cur = 0;
+              for(int i=0; i<nums.size(); i++){
+                  if(nums[i]!=1) cur = 0; 
+                  else{
+                      cur++;
+                      ans = max(cur,ans);
+                  }
+              }
+              return ans;
+          }
