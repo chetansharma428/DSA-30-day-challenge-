@@ -1,0 +1,53 @@
+Q. Given an integer array nums that may contain duplicates, return all possible 
+subsets (the power set).
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+Example 1:
+Input: nums = [1,2,2]
+Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+
+Example 2:
+Input: nums = [0]
+Output: [[],[0]]
+ 
+Constraints:
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+
+Approach : same approach pick and not pick way like in subset sum, but the problem is duplicates for that we can use a hashset and store all the subsets. 
+          Time Complexity: O(2^N)
+          Space Complexity: O(2^N) + O(2^N) hashset space
+
+Approach 2: we can improve the space Complexity by removing the hashset, for that
+            1. we can observe that no avoid duplicates our second taking element from single call shouldn't be same(means if( our call index != loop index && both the element are same ) continue and do nothing;).
+            2.while returning back we backtrack and remove the pushed element.
+            3.our base case hit when loop index == n-1.
+            4.we push every subset at the beginning of every call as we know there will be no duplicate as we handled that inside the loop.
+            Time Complexity: O(2^N)
+            Space Complexity: O(2^N) recursive call stack
+            Code:
+              void solve(int idx, vector<int> &sum, vector<vector<int>>& ans, vector<int> nums, int n){
+                   ans.push_back(sum);  // as we know there is no duplicates so we push every subsets.
+                for(int i=idx; i<n; i++){
+                    if(i!=idx && nums[i]==nums[i-1]) // we avoid duplicates here by not taking same elements in same call
+                        continue;
+                     sum.push_back(nums[i]);
+                     solve(i+1,sum,ans,nums,n);
+                     sum.pop_back(); // backtracking here
+                }
+                return;
+            }
+            vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+                sort(nums.begin(), nums.end());
+                vector<vector<int>> ans;
+                // if(nums.size() == 1) {
+                //     ans.push_back({});
+                //     ans.push_back({nums[0]});
+                //     return ans;
+                // }
+                vector<int> sum;
+                solve(0,sum,ans,nums,nums.size());
+                return ans;
+            }
+          
+          
