@@ -1,0 +1,53 @@
+Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order.
+The same number may be chosen from candidates an unlimited number of times. Two combinations are unique if the frequency of at least one of the chosen numbers is different.
+The test cases are generated such that the number of unique combinations that sum up to target is less than 150 combinations for the given input.
+
+Example 1:
+Input: candidates = [2,3,6,7], target = 7
+Output: [[2,2,3],[7]]
+Explanation:
+2 and 3 are candidates, and 2 + 2 + 3 = 7. Note that 2 can be used multiple times.
+7 is a candidate, and 7 = 7.
+These are the only two combinations.
+
+Example 2:
+Input: candidates = [2,3,5], target = 8
+Output: [[2,2,2,2],[2,3,3],[3,5]]
+
+Example 3:
+Input: candidates = [2], target = 1
+Output: []
+ 
+Constraints:
+1 <= candidates.length <= 30
+2 <= candidates[i] <= 40
+All elements of candidates are distinct.
+1 <= target <= 40
+
+Approach :1. we need to find the combinations whose sum == 0, and we know how to find the combination pick and not pick method just we need to maintain a target value.
+          2. if target == 0 means we find out combination push to answer array
+          3. we only take value which are less than or equal to target.
+          4. else we move to next element by incrementing index and call.
+          Time Complexity: O(2^N)
+          Space Complexity: O(N)
+          Code:
+            void solve(int idx, vector<int> &sum, vector<vector<int>> &ans, vector<int> &candidates,
+              int target){
+                  //base case
+                  if(idx == candidates.size()){
+                      if(target == 0) ans.push_back(sum);
+                      return;
+                  }
+                   if(candidates[idx]<=target){
+                      sum.push_back(candidates[idx]);
+                      solve(idx,sum,ans,candidates,target-candidates[idx]);
+                      sum.pop_back();
+                   }
+                      solve(idx+1,sum,ans,candidates,target);
+              }
+              vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+                  vector<vector<int>> ans;
+                  vector<int> sum;
+                  solve(0,sum,ans,candidates,target);
+                  return ans;
+              }
