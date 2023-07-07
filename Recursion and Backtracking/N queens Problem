@@ -1,0 +1,124 @@
+Q. The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other
+Given an integer n, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.
+Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space, respectively.
+
+Example 1:
+Input: n = 4
+Output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+Explanation: There exist two distinct solutions to the 4-queens puzzle
+
+Example 2:
+Input: n = 1
+Output: [["Q"]]
+ 
+Constraints:
+1 <= n <= 9
+ 
+Approach 1: This is a Classical backtracking problem, where we reach out all the possible outcomes and from that we keep the correct outputs.
+          Algo:
+          1. Make a board of size n where every row is a string of n size with '.' in every cell.
+          2. we try out by placing queen at every row and check whether this place is correction position or not. For that,
+              we need to place queen in every row means that for every row we place queen and if its correction position then we call for next column
+              NOTE: we call for next column and again in that row we check for every row from 0-n-1 means there will be a loop which will always run from 0-n-1. 
+          3. (Backtracking Part) : if all the column gives false position check means somewhere our previous queen placement is incorrect so we need to backtrack and 
+                                    remove our queen from there by making it '.' .
+          4. (Base Case) : when our column reaches n means we have tried all posible ways of placing queen and store that board.
+          Time Complexity: O(N*N!)
+          Space Complexity: O(N^2) call stack space
+          Code:
+            class Solution {
+              public:
+                  bool checker(int row, int col, vector<string> &board,int n){
+                      int newrow = row;
+                      int newcol = col;
+                      //row back
+                          while(newcol>=0){
+                              if(board[newrow][newcol--] == 'Q') return false;
+                          }
+                      newcol = col;
+                      //diagonal up
+                      while(newrow>=0 && newcol>=0){
+                          if(board[newrow--][newcol--] == 'Q') return false;
+                      }
+                      newrow = row;
+                      newcol = col;
+                      //diagonal down
+                      while(newcol>=0 && newrow<n){
+                          if(board[newrow++][newcol--] == 'Q') return false;
+                      }
+                  return true;
+                  }
+                  void solve(int idx, vector<string> &board,vector<vector<string>> &ans, int n ){
+                      // base case
+                      if(idx == n){
+                          ans.push_back(board);
+                          return;
+                      }
+                      for(int i=0; i<n; i++){
+                           if(checker(i,idx,board,n) == true){
+                                  board[i][idx] = 'Q';
+                                  solve(idx+1,board,ans,n);
+                                  board[i][idx] = '.';
+                              }
+                          }
+                  }
+                  vector<vector<string>> solveNQueens(int n) {
+                      vector<vector<string>> ans;
+                      if(n == 1){
+                          ans.push_back({"Q"});
+                          return ans;
+                      }
+                      string boardRow = "";
+                      for(int i=0; i<n; i++)
+                          boardRow.push_back('.');
+                      vector<string> board(n,boardRow);
+                      solve(0,board,ans,n);
+                      return ans;
+                  }
+            };
+Approach 2: There is an Optimised solution for this problem also where we use hashmap and we optimise our correct position function to O(1) and improve the 
+            time complexity from O(n*n!) -> O(n!).
+            Space Complexity : O(n^2)
+            Code:
+              class Solution {
+                void solve(int col, vector<string> &board, int n, vector<int> &leftrow, vector<int> &lowerdiagonal, vector<int> &upperdiagonal,
+                            vector<vector<string>> &ans){ // TC: O(n*(n-1)*(n-2)*(n-3)...) = O(n!)
+                    // base case
+                    if(col == n){
+                        ans.push_back(board);
+                        return;
+                    }
+            
+                    // solve 1 case and rest recurssion will take care
+                    for(int row=0; row<n; row++){
+                        if(leftrow[row] == 0 && lowerdiagonal[row+col] == 0 && upperdiagonal[n-1+col-row] == 0){ // isSafe func() --> TC: O(1)
+                            board[row][col] = 'Q';
+                            leftrow[row] = 1;
+                            lowerdiagonal[row+col] = 1;
+                            upperdiagonal[n-1+col-row] = 1;
+                            solve(col+1, board, n, leftrow, lowerdiagonal, upperdiagonal, ans);
+                            // backtracking
+                            board[row][col] = '.';
+                            leftrow[row] = 0;
+                            lowerdiagonal[row+col] = 0;
+                            upperdiagonal[n-1+col-row] = 0;
+                        }
+                    }
+                }
+            
+                public:
+                vector<vector<string>> solveNQueens(int n) {
+                    // write your code here
+            
+                    vector<string> board(n, string(n, '.')); // SC: O(n*n)
+                    vector<vector<string>> ans; // SC: O(n*n*n)
+                    
+                    vector<int> leftrow(n, 0); // SC: O(n)
+                    vector<int> lowerdiagonal(2*n-1, 0); // SC: O(n)
+                    vector<int> upperdiagonal(2*n-1, 0); // SC: O(n)
+                    
+                    solve(0, board, n, leftrow, lowerdiagonal, upperdiagonal, ans);
+                    
+                    return ans;
+                }
+            };
