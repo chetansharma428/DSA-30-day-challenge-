@@ -51,7 +51,7 @@ Approach 2: we can do that in one pass what we ll do is we ll simply check if th
           if our answer array is empty then we ll simply store the question's array pair because thats our first pair and we ll update accordingly
          
          code:
-           //optmised O(N) O(N)
+           //optmised O(NlogN) O(N)
                 sort(intervals.begin(),intervals.end());
                   vector<vector<int>> ans;
                   int n = intervals.size();
