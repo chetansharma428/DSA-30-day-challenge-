@@ -1,0 +1,66 @@
+Given the root of a complete binary tree, return the number of the nodes in the tree.
+According to Wikipedia, every level, except possibly the last, is completely filled in a complete binary tree, and all nodes in the last level are as far left as possible. 
+It can have between 1 and 2h nodes inclusive at the last level h.
+
+Design an algorithm that runs in less than O(n) time complexity.
+
+Example 1:
+Input: root = [1,2,3,4,5,6]
+Output: 6
+
+Example 2:
+Input: root = []
+Output: 0
+
+Example 3:
+Input: root = [1]
+Output: 1
+ 
+Constraints:
+The number of nodes in the tree is in the range [0, 5 * 104].
+0 <= Node.val <= 5 * 104
+The tree is guaranteed to be complete.
+
+Brute Force: we can do simple traversal and count the number of nodes and return the answer.
+            T.C: O(N) S.C: O(N) call stack space
+
+Optimised : we can use the property of Complete binary tree and as we know if all the level and filled in a BT then the number of nodes will be (2^N-1).
+            using the above logic.
+            1. first find the height of left subtree and right subtree.
+            2. if leftheight  == rightheight then we can use the formula 2^height-1
+            3. if != then we again call left and right +1 
+            T.C: O(logN)^2 S.C: O(LogN)
+      Code : 
+            int heightleft(TreeNode* root){
+                if(!root) return 0;
+                int nodes = 0;
+                while(root){
+                    nodes++;
+                    root = root->left;
+                }
+                return nodes;
+            }
+            int heightright(TreeNode* root){
+                if(!root) return 0;
+                int nodes = 0;
+                while(root){
+                    nodes++;
+                    root = root->right;
+                }
+                return nodes;
+            }
+            int helper(TreeNode* root){
+                if(!root) return 0;
+        
+                int leftHeight = heightleft(root);
+                int rightHeight = heightright(root);
+                if(leftHeight == rightHeight){
+                    return (pow(2,leftHeight)-1);
+                }
+                return 1 + helper(root->left)+helper(root->right);
+            }
+            int countNodes(TreeNode* root) {
+                if(!root) return 0;
+        
+                return helper(root);
+            }
