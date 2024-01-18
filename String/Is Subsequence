@@ -1,0 +1,78 @@
+Given two strings s and t, return true if s is a subsequence of t, or false otherwise.
+A subsequence of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (i.e., "ace" is a subsequence of "abcde" while "aec" is not).
+
+Example 1:
+
+Input: s = "abc", t = "ahbgdc"
+Output: true
+Example 2:
+
+Input: s = "axc", t = "ahbgdc"
+Output: false
+ 
+
+Constraints:
+
+0 <= s.length <= 100
+0 <= t.length <= 104
+s and t consist only of lowercase English letters.
+
+Approch 1: we use two pointers and increment one pointer if we get both the char same else we increment the second pointer and at the end if the first pointer  == the string s return true
+        T.C: O(N) S.C: O(1)
+        code: 
+            bool isSubsequence(string s1, string s2) {
+                //brute force O(N) O(1)
+                int j=0;
+                for(int i=0; i<t.length() && j<s.length(); i++)
+                    if(s[j] == t[i])
+                        j++;
+                return j == s.length();
+            }
+Approach 2 : we can use the same logic in recursive approach and solve the given problem. instead of iterating from start we iterate from end and if the pointer becomes 0 thats our base case
+          T.C: O(N) 
+        code: 
+            bool isSubsequence(string s1, string s2) {
+            //recursive approach 
+              if(isSub(s,t,s.length(), t.length()))
+                  return true;
+              return false;
+              }
+            bool isSub(string &s, string &t, int n, int m){
+              if(n == 0) return true;
+              if(m == 0) return false;
+      
+              if(s[n-1] == t[m-1])
+                  return isSub(s,t,n-1,m-1);
+              return isSub(s,t,n,m-1);
+          }
+Approach 3: we can save Time complexity by storing some answers which are going to repeat in future and return it as per calls.
+          T.C:O(N) O(N)
+        code:  
+               bool isSubsequence(string s1, string s2) {
+               // DP approach 
+              int m = s1.length();
+              int n = s2.length();
+              
+              // intialising dp matrix with -1
+              
+              if(m >  n)
+                  return false;
+              
+              vector<vector<int>> t(m+1,vector<int> (n+1,-1));
+          
+              if(isSubs(s1,s2,m,n,t) == m)
+                  return true;
+              return false;
+          }
+          // returns the length of longest common subsequence
+            int isSubs(string& s1, string& s2, int i , int j,vector<vector<int>> &t)
+            {
+                if(i == 0 || j == 0)
+                    return 0;
+                if(t[i][j] != -1)
+                    return t[i][j];
+                if(s1[i-1] == s2[j-1])
+                    return t[i][j] = 1 + isSubs(s1,s2,i-1,j-1,t);
+                else
+                    return t[i][j] = isSubs(s1,s2,i,j-1,t);
+            }
