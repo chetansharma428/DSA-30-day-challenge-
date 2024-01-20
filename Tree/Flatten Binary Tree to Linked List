@@ -1,0 +1,57 @@
+Given the root of a binary tree, flatten the tree into a "linked list":
+
+The "linked list" should use the same TreeNode class where the right child pointer points to the next node in the list and the left child pointer is always null.
+The "linked list" should be in the same order as a pre-order traversal of the binary tree.
+ 
+
+Example 1:
+
+
+Input: root = [1,2,5,3,4,null,6]
+Output: [1,null,2,null,3,null,4,null,5,null,6]
+Example 2:
+
+Input: root = []
+Output: []
+Example 3:
+
+Input: root = [0]
+Output: [0]
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 2000].
+-100 <= Node.val <= 100
+
+Approach 1: we can use preorder traversal and store the node in a vector and change it
+            vector[i]->right = vector[i+1]
+            vector[i]->left = NULL
+            and make the tree according to that vector.
+            T.C: O(N) S.C: O(N)
+Approach 2: obeservation: we need to connect the leftsub trees rightMost node to the roots->right node 
+              based of above observation :
+                                  1. if(root->left) is not null find the rightmost node of that subtree.
+                                  2. make root->right = root->left
+                                  3. connect the rightmost node to roots ->right
+              T.C: O(N) S.C: O(1)
+              code:
+                TreeNode* findRightNode(TreeNode* root){
+                   if(!root->right) return root;
+                   return findRightNode(root->right);
+                }
+                void flatten(TreeNode* root) {
+                    if(!root) return;
+                    TreeNode* rightNode;
+                    TreeNode* lefts_endRightNode;
+                    while(root){
+                        if(root->left){
+                            lefts_endRightNode = findRightNode(root->left); // find the rightmost node
+                            rightNode = root->right; // store the right node from the root so that we can use that later
+                            root->right = root->left; // make the left to right 
+                            root->left = NULL; // make the left part NULL
+                            lefts_endRightNode->right = rightNode; // rightmost nodes right will be our stored roots right 
+                        }
+                        root = root->right; // we go right coz we make the left part as NULL
+                    }
+                }
