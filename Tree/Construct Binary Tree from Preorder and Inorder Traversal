@@ -1,0 +1,75 @@
+Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
+
+Example 1:
+
+
+Input: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+Output: [3,9,20,null,null,15,7]
+Example 2:
+
+Input: preorder = [-1], inorder = [-1]
+Output: [-1]
+ 
+
+Constraints:
+
+1 <= preorder.length <= 3000
+inorder.length == preorder.length
+-3000 <= preorder[i], inorder[i] <= 3000
+preorder and inorder consist of unique values.
+Each value of inorder also appears in preorder.
+preorder is guaranteed to be the preorder traversal of the tree.
+inorder is guaranteed to be the inorder traversal of the tree.
+
+brute force: As we know the preorders first starting elements are the Root of the tree and based on that logic we develop or logic.
+            1. take the elements one by one from preorder and make a node for the tree.
+            2. find that elements position on the inorder array.
+            3. the left side of the position will the left subtree and the right side elements will be the right subtree.
+            4. we need to maintain the starting and endings of both in preorder and inorder.
+        T.C: O(N^2) S.C:O(1)
+        Code:
+           TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+                //brute force without map
+                return createTree(preorder, inorder, 0, preorder.size()-1, 0, inorder.size()-1);
+            }
+           TreeNode* createTree(vector<int> &pre, vector<int> &in, int preStart, int preEnd, int inStart, int inEnd){
+              //base case
+              if(preStart>preEnd || inStart>inEnd)
+                  return NULL;
+              int ele = pre[preStart];
+              TreeNode* root = new TreeNode(ele);
+              int index = findNode(in, ele, inStart, inEnd);
+              int remaining_left_side = index - inStart;
+              root->left = createTree(pre, in, preStart+1, preStart+remaining_left_side, inStart, index-1);
+              root->right = createTree(pre, in, preStart+remaining_left_side+1, preEnd, index+1, inEnd);
+              return root;
+          }
+          int findNode(vector<int> &in, int ele, int start, int end){
+              for(int i=start; i<=end; i++)
+                  if(in[i] == ele) return i;
+              return -1;
+          }
+Optimised Using Hashmap: we can reduce the time of find the position of the element in the inorder by using a hashmap and storing all the element and key and value will be there index.
+                      T.C: O(N) S.C: O(N)
+                  Code:
+                  TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+                      //Optimised using hashMap
+                      unordered_map<int,int> mp;
+                      int n = inorder.size();
+                      for(int i=0; i<n; i++)
+                          mp[inorder[i]] = i;
+                      return createTree(preorder, 0, n-1, inorder, 0, n-1, mp);
+                  }
+              TreeNode* createTree(vector<int> &pre, int preStart, int preEnd, vector<int> &in, int inStart, int inEnd, unordered_map<int,int> &mp){
+                  //base case 
+                  if(preStart>preEnd || inStart>inEnd)
+                      return NULL;
+                  int ele = pre[preStart];
+                  TreeNode* root = new TreeNode(ele);
+                  int position = mp[ele];
+                  int remaining_left = position - inStart;
+          
+                  root->left = createTree(pre, preStart+1, remaining_left+preStart, in, inStart, position-1, mp);
+                  root->right = createTree(pre, preStart+remaining_left+1, preEnd, in, position+1, inEnd, mp);
+                  return root;
+              }
