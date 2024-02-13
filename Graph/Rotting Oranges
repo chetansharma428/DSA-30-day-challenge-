@@ -1,0 +1,101 @@
+You are given an m x n grid where each cell can have one of three values:
+
+0 representing an empty cell,
+1 representing a fresh orange, or
+2 representing a rotten orange.
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+
+ 
+
+Example 1:
+
+
+Input: grid = [[2,1,1],[1,1,0],[0,1,1]]
+Output: 4
+Example 2:
+
+Input: grid = [[2,1,1],[0,1,1],[1,0,1]]
+Output: -1
+Explanation: The orange in the bottom left corner (row 2, column 0) is never rotten, because rotting only happens 4-directionally.
+Example 3:
+
+Input: grid = [[0,2]]
+Output: 0
+Explanation: Since there are already no fresh oranges at minute 0, the answer is just 0.
+ 
+
+Constraints:
+
+m == grid.length
+n == grid[i].length
+1 <= m, n <= 10
+grid[i][j] is 0, 1, or 2.
+
+Intuition:
+          There can be multiple rotten oranges in a grid and we need to find out the maximum number of time it takes to make all the or last orange to become rotten.
+          Can we see a scenario where source can be rotten orange and our last fresh orange can be destination?
+Approach:
+          We can use multisource BFS to find the maximum time taken to make the destination node rotten and maintain a time matrix where we store the time and at last
+          we traverse the whole grid and if there exist a fresh orange(we use the grid matrix as a visited array) return -1 else find the max in time matrix.
+Complexity:
+Time complexity:O(N*M)
+Space complexity: O(N*M)
+  Code:
+      int orangesRotting(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        int time[n][m];  
+        for(int i=0; i<n; i++)
+            for(int j=0; j<m; j++){
+                time[i][j] = -1;
+            }
+        queue<pair<int,int>> q;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<m; j++){
+              // Pushing all the rotten oranges inside the queue as a source
+                if(grid[i][j] == 2){
+                    q.push(make_pair(i,j));
+                    grid[i][j] = 0; // marking them visited so that we dont travese them again
+                    time[i][j] = 0;  // marking the source nodes time as 0
+                }
+            } 
+        }
+        while(!q.empty()){
+            int i = q.front().first;
+            int j = q.front().second;
+            q.pop();
+            // UP
+            if(i>0 && grid[i-1][j] == 1){
+                grid[i-1][j] = 0;
+                time[i-1][j] = time[i][j]+1;
+                q.push(make_pair(i-1,j));
+            }
+            //DOWN
+            if(i<n-1 && grid[i+1][j] == 1){
+                grid[i+1][j] = 0;
+                time[i+1][j] = time[i][j]+1;
+                q.push(make_pair(i+1,j));
+            }
+            //LEFT
+            if(j>0 && grid[i][j-1] == 1){
+                grid[i][j-1] = 0;
+                time[i][j-1] = time[i][j]+1;
+                q.push(make_pair(i,j-1));
+            }
+            //RIGHT
+            if(j<m-1 && grid[i][j+1] == 1){
+                grid[i][j+1] = 0;
+                time[i][j+1] = time[i][j]+1;
+                q.push(make_pair(i,j+1));
+            }
+        }
+        int ans = 0;
+        for(int i=0; i<n; i++)
+            for(int j=0; j<m; j++){
+                if(grid[i][j] == 1) return -1;
+                ans = max(ans,time[i][j]);
+            }
+        return ans;
+    }
